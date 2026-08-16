@@ -85,7 +85,19 @@ def player_turn(x_o):
         print('invalid move')
         return False
 
+def available_moves():
+    return [i for i in moves if real_moves[i] == '']
 
+def minmax():
+    if result() == 'win':
+        return -1
+    elif result() == 'draw':
+        return 0
+    elif result() == 'lose':
+        return 1
+    
+
+#---------
 choice = None
 turn = None
 running = True
@@ -141,9 +153,7 @@ while running:
 
     else:
         print('=' * 20)
-
-        available = [i for i in moves if real_moves[i] == '']
-        move = rn.choice(available)
+        move = rn.choice(available_moves())
 
         real_moves[move] = computer_x_o
 
