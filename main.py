@@ -217,6 +217,32 @@ def best_move():
 
     return best_move
 
+def var_reset():
+    global choice, turn, difficulty, running
+
+    choice = None
+    turn = None
+    difficulty = None
+
+    for i in moves:
+        real_moves[i] = ''
+
+def play_again():
+    while True:
+        again = input('do u wanna play again? (y/n) > ')
+        again = txt_init(again)
+
+        if again == 'y':
+            var_reset()
+            return True
+
+        elif again == 'n':
+            print('quitting...')
+            running = False
+            return False
+
+        else:
+            print('invalid input')
 
 # ---------
 
@@ -228,7 +254,8 @@ running = True
 while running:
 
     if choice is None:
-        choice = input('''chose who to make the 1st move
+        print('=' * 20)
+        choice = input('''\nchose who to make the 1st move
         0. you
         1. computer
         q. quite
@@ -256,6 +283,7 @@ while running:
             continue
 #difficulty selection
     if difficulty is None:
+        print('=' * 20)
         difficulty = input('''chose difficulty
         0. easy
         1. hard
@@ -280,12 +308,18 @@ while running:
             if result() == player_x_o:
                 show_table()
                 print('you win!')
-                break
+                if play_again():
+                    continue
+                else:
+                    break
 
             elif result() == 'draw':
                 show_table()
                 print('draw!')
-                break
+                if play_again():
+                    continue
+                else:
+                    break
 
             turn = False
 
@@ -306,11 +340,17 @@ while running:
         if result() == computer_x_o:
             show_table()
             print('computer wins!')
-            break
+            if play_again():
+                continue
+            else:
+                break
 
         elif result() == 'draw':
             show_table()
             print('draw!')
-            break
+            if play_again():
+                continue
+            else:
+                break
 
         turn = True
