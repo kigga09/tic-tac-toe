@@ -254,7 +254,7 @@ while running:
             choice = None
             continue
 
-    # ---------- PLAYER TURN ----------
+    #player turn
 
     if turn:
         print('=' * 20)
@@ -276,7 +276,7 @@ while running:
 
             turn = False
 
-    # ---------- COMPUTER TURN ----------
+    # computer turn
 
     else:
         print('=' * 20)
