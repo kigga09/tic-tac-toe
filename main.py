@@ -13,27 +13,31 @@ real_moves = {
 }
 
 diagonals = [
-            ['1', '2', '3'],
-            ['4', '5', '6'],
-            ['7', '8', '9'],
-            ['1', '5', '9'],
-            ['3', '5', '7'],
-            ['1', '4', '7'],
-            ['2', '5', '8'],
-            ['3', '6', '9']
-            ]
+    ['1', '2', '3'],
+    ['4', '5', '6'],
+    ['7', '8', '9'],
+    ['1', '5', '9'],
+    ['3', '5', '7'],
+    ['1', '4', '7'],
+    ['2', '5', '8'],
+    ['3', '6', '9']
+]
 
 moves = real_moves.keys()
+
+
+# ----------
 
 def result():
     for i in diagonals:
         if all_equal([real_moves[j] for j in i]) and real_moves[i[0]] != '':
-            return 'win'
+            return real_moves[i[0]]
 
     if all(real_moves[i] != '' for i in moves):
         return 'draw'
 
     return None
+
 
 def txt_init(txt):
     txt = txt.lower()
@@ -42,6 +46,7 @@ def txt_init(txt):
     txt = txt.replace('\t', '')
     txt = txt.replace('\r', '')
     return txt
+
 
 def isvalid(move):
     if move in moves:
@@ -52,6 +57,7 @@ def isvalid(move):
     else:
         return False
 
+
 def all_equal(list):
     ref = list[0]
 
@@ -61,12 +67,14 @@ def all_equal(list):
 
     return True
 
+
 def show_table():
     print(f'''
 {real_moves['1'] or '1'} - {real_moves['2'] or '2'} - {real_moves['3'] or '3'}
 {real_moves['4'] or '4'} - {real_moves['5'] or '5'} - {real_moves['6'] or '6'}
 {real_moves['7'] or '7'} - {real_moves['8'] or '8'} - {real_moves['9'] or '9'}
 ''')
+
 
 def player_turn(x_o):
     global move, running
@@ -85,19 +93,133 @@ def player_turn(x_o):
         print('invalid move')
         return False
 
+
 def available_moves():
     return [i for i in moves if real_moves[i] == '']
 
+
+# ---------- MINIMAX ----------
+
 def minmax():
-    if result() == 'win':
+    # If the computer has already won
+    if result() == computer_x_o:
+        return 1
+
+    # If the player has already won
+    elif result() == player_x_o:
         return -1
+
+    # If the game is a draw
     elif result() == 'draw':
         return 0
-    elif result() == 'lose':
-        return 1
-    
 
-#---------
+    # Computer tries to get the highest score
+    best_score = -100
+
+    for move in available_moves():
+
+        # Computer temporarily plays this move
+        real_moves[move] = computer_x_o
+
+        # Now let the opponent play
+        score = min_player()
+
+        # Undo the move
+        real_moves[move] = ''
+
+        if score > best_score:
+            best_score = score
+
+    return best_score
+
+
+def min_player():
+    # If the computer has won
+    if result() == computer_x_o:
+        return 1
+
+    # If the player has won
+    elif result() == player_x_o:
+        return -1
+
+    # If draw
+    elif result() == 'draw':
+        return 0
+
+    # Player tries to get the lowest score
+    best_score = 100
+
+    for move in available_moves():
+
+        # Player temporarily plays this move
+        real_moves[move] = player_x_o
+
+        # Now let the computer play
+        score = min_computer()
+
+        # Undo the move
+        real_moves[move] = ''
+
+        if score < best_score:
+            best_score = score
+
+    return best_score
+
+
+def min_computer():
+    # If the computer has won
+    if result() == computer_x_o:
+        return 1
+
+    # If the player has won
+    elif result() == player_x_o:
+        return -1
+
+    # If draw
+    elif result() == 'draw':
+        return 0
+
+    best_score = -100
+
+    for move in available_moves():
+
+        real_moves[move] = computer_x_o
+
+        score = min_player()
+
+        real_moves[move] = ''
+
+        if score > best_score:
+            best_score = score
+
+    return best_score
+
+
+def best_move():
+    best_score = -100
+    best_move = None
+
+    for move in available_moves():
+
+        # Try the move
+        real_moves[move] = computer_x_o
+
+        # See how good this move eventually becomes
+        score = min_player()
+
+        # Undo the move
+        real_moves[move] = ''
+
+        # Keep the best move
+        if score > best_score:
+            best_score = score
+            best_move = move
+
+    return best_move
+
+
+# ---------
+
 choice = None
 turn = None
 running = True
@@ -132,6 +254,8 @@ while running:
             choice = None
             continue
 
+    # ---------- PLAYER TURN ----------
+
     if turn:
         print('=' * 20)
         show_table()
@@ -139,7 +263,8 @@ while running:
         move = input('whats ur move > ')
 
         if player_turn(player_x_o):
-            if result() == 'win':
+
+            if result() == player_x_o:
                 show_table()
                 print('you win!')
                 break
@@ -151,15 +276,18 @@ while running:
 
             turn = False
 
+    # ---------- COMPUTER TURN ----------
+
     else:
         print('=' * 20)
-        move = rn.choice(available_moves())
+
+        move = best_move()
 
         real_moves[move] = computer_x_o
 
         print('computer played:', move)
 
-        if result() == 'win':
+        if result() == computer_x_o:
             show_table()
             print('computer wins!')
             break
