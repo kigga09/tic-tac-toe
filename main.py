@@ -222,6 +222,7 @@ def best_move():
 
 choice = None
 turn = None
+difficulty = None
 running = True
 
 while running:
@@ -253,6 +254,18 @@ while running:
             print('invalid input')
             choice = None
             continue
+#difficulty selection
+    if difficulty is None:
+        difficulty = input('''chose difficulty
+        0. easy
+        1. hard
+        > ''')
+
+        difficulty = txt_init(difficulty)
+        if difficulty not in ['0', '1']:
+            print('invalid input')
+            difficulty = None
+            continue
 
     #player turn
 
@@ -279,9 +292,12 @@ while running:
     # computer turn
 
     else:
+            
         print('=' * 20)
-
-        move = best_move()
+        if difficulty == '0':
+            move = rn.choice(available_moves())
+        elif difficulty == '1':
+            move = best_move()
 
         real_moves[move] = computer_x_o
 
