@@ -77,13 +77,19 @@ def show_table():
 
 
 def player_turn(x_o):
-    global move, running
+    global move, running, choice
 
     move = txt_init(move)
 
     if move == 'q':
         running = False
         return False
+    
+    elif move == 'r':
+        choice = None
+        difficulty = None
+        var_reset()
+        print('restarting...')
 
     elif isvalid(move):
         real_moves[move] = x_o
@@ -98,7 +104,7 @@ def available_moves():
     return [i for i in moves if real_moves[i] == '']
 
 
-# ---------- MINIMAX ----------
+# minmax algorithm
 
 def minmax():
     # If the computer has already won
@@ -217,6 +223,7 @@ def best_move():
 
     return best_move
 
+#play again
 def var_reset():
     global choice, turn, difficulty, running
 
@@ -252,14 +259,32 @@ difficulty = None
 running = True
 
 while running:
+                #difficulty selection
+    if difficulty is None:
+        print('=' * 20)
+        difficulty = input('''\nchose difficulty
+        0. easy
+        1. hard
+        q. quite (type 'q' whenever u wanna quit)
+                 (press 'r' whenever u wanna restart)
+        > ''')
+
+        difficulty = txt_init(difficulty)
+        if difficulty not in ['0', '1']:
+            if difficulty == 'q':
+                print('quiting...')
+                break
+            else:
+                print('invalid input')
+                difficulty = None
+                continue
 
     if choice is None:
         print('=' * 20)
         choice = input('''\nchose who to make the 1st move
         0. you
         1. computer
-        q. quite
-            (type 'q' whenever u wanna quit)
+        2. step back
         > ''')
 
         choice = txt_init(choice)
@@ -276,24 +301,16 @@ while running:
             turn = False
             player_x_o = 'O'
             computer_x_o = 'X'
-
+        elif choice=='2':
+            print('going a step back')
+            difficulty=None
+            choice=None
+            continue
         else:
             print('invalid input')
             choice = None
             continue
-#difficulty selection
-    if difficulty is None:
-        print('=' * 20)
-        difficulty = input('''chose difficulty
-        0. easy
-        1. hard
-        > ''')
 
-        difficulty = txt_init(difficulty)
-        if difficulty not in ['0', '1']:
-            print('invalid input')
-            difficulty = None
-            continue
 
     #player turn
 
